@@ -30,7 +30,7 @@ only then runs the script with `MDMESH_VERSION` set to that release, so it insta
 ```bash
 (
   R=https://github.com/01karev/MDMesh/releases
-  V=$(curl -fsSLI -o /dev/null -w '%{url_effective}' "$R/latest" | sed -n 's#^https://github\.com/MDMesh-app/MDMesh/releases/tag/v\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)$#\1#p')
+  V=$(curl -fsSLI -o /dev/null -w '%{url_effective}' "$R/latest" | sed -n 's#^https://github\.com/01karev/MDMesh/releases/tag/v\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)$#\1#p')
   d=$(mktemp -d) || exit 1; trap 'rm -f -- "$d"/*; rmdir -- "$d"' EXIT
   for f in quickstart.sh manifest.json manifest.json.minisig; do
     [ -n "$V" ] && curl -fsSL -o "$d/$f" "$R/download/v$V/$f" || V=
@@ -54,7 +54,7 @@ not itself). It accepts only a `vX.Y.Z` release tag and stops otherwise; what pr
 
 ```bash
 (
-  t=$(curl -fsSLI -o /dev/null -w '%{url_effective}' https://github.com/01karev/MDMesh/releases/latest | sed -n 's#^https://github\.com/MDMesh-app/MDMesh/releases/tag/\(v[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)$#\1#p')
+  t=$(curl -fsSLI -o /dev/null -w '%{url_effective}' https://github.com/01karev/MDMesh/releases/latest | sed -n 's#^https://github\.com/01karev/MDMesh/releases/tag/\(v[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)$#\1#p')
   [ -n "$t" ] && q=$(curl -fsSL "https://raw.githubusercontent.com/01karev/MDMesh/refs/tags/$t/quickstart.sh") ||
     { echo "Could not get the latest release's quickstart.sh. Nothing was installed." >&2; exit 1; }
   bash -c "$q" quickstart.sh
@@ -87,7 +87,7 @@ release's tag by the shortcut, or as the release asset by the README's command).
 
 If the latest release can't be looked up (GitHub API unreachable or rate-limited), the quick start stops and says so;
 it no longer falls back to `main` and `:latest`. Run it again later, or name the release:
-`MDMESH_VERSION=X.Y.Z bash <(curl -fsSL https://raw.githubusercontent.com/MDMesh-app/MDMesh/refs/tags/vX.Y.Z/quickstart.sh)`
+`MDMESH_VERSION=X.Y.Z bash <(curl -fsSL https://raw.githubusercontent.com/01karev/MDMesh/refs/tags/vX.Y.Z/quickstart.sh)`
 (unchecked, like the shortcut).
 
 ## Option B — from source (clone + build)
