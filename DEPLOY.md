@@ -29,7 +29,7 @@ only then runs the script with `MDMESH_VERSION` set to that release, so it insta
 
 ```bash
 (
-  R=https://github.com/MDMesh-app/MDMesh/releases
+  R=https://github.com/01karev/MDMesh/releases
   V=$(curl -fsSLI -o /dev/null -w '%{url_effective}' "$R/latest" | sed -n 's#^https://github\.com/MDMesh-app/MDMesh/releases/tag/v\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)$#\1#p')
   d=$(mktemp -d) || exit 1; trap 'rm -f -- "$d"/*; rmdir -- "$d"' EXIT
   for f in quickstart.sh manifest.json manifest.json.minisig; do
@@ -54,8 +54,8 @@ not itself). It accepts only a `vX.Y.Z` release tag and stops otherwise; what pr
 
 ```bash
 (
-  t=$(curl -fsSLI -o /dev/null -w '%{url_effective}' https://github.com/MDMesh-app/MDMesh/releases/latest | sed -n 's#^https://github\.com/MDMesh-app/MDMesh/releases/tag/\(v[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)$#\1#p')
-  [ -n "$t" ] && q=$(curl -fsSL "https://raw.githubusercontent.com/MDMesh-app/MDMesh/refs/tags/$t/quickstart.sh") ||
+  t=$(curl -fsSLI -o /dev/null -w '%{url_effective}' https://github.com/01karev/MDMesh/releases/latest | sed -n 's#^https://github\.com/MDMesh-app/MDMesh/releases/tag/\(v[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\)$#\1#p')
+  [ -n "$t" ] && q=$(curl -fsSL "https://raw.githubusercontent.com/01karev/MDMesh/refs/tags/$t/quickstart.sh") ||
     { echo "Could not get the latest release's quickstart.sh. Nothing was installed." >&2; exit 1; }
   bash -c "$q" quickstart.sh
 )
@@ -93,7 +93,7 @@ it no longer falls back to `main` and `:latest`. Run it again later, or name the
 ## Option B — from source (clone + build)
 
 ```bash
-git clone https://github.com/MDMesh-app/MDMesh.git && cd MDMesh
+git clone https://github.com/01karev/MDMesh.git && cd MDMesh
 ./setup.sh --update      # checks out the newest signed release, then sets it up
 ```
 
@@ -213,8 +213,8 @@ printed.
 | `MDMESH_HOST` | A, B | the public hostname only, e.g. `mdm.example.com` (no `https://`), optionally `:port` | asked |
 | `MDMESH_TUNNEL_TOKEN` | A, B | the Cloudflare Tunnel token (tunnel mode) | asked |
 | `MDMESH_ACME_EMAIL` | A, B | the email for Let's Encrypt (domain mode); empty for none | asked |
-| `MDMESH_REPO` | A | the GitHub repo to install from, `owner/name` | asked, default `MDMesh-app/MDMesh` |
-| `MDMESH_IMAGE_OWNER` | A | the GHCR owner of the images, lowercase | asked, default `mdmesh-app` |
+| `MDMESH_REPO` | A | the GitHub repo to install from, `owner/name` | asked, default `01karev/MDMesh` |
+| `MDMESH_IMAGE_OWNER` | A | the GHCR owner of the images, lowercase | asked, default `01karev` |
 | `MDMESH_ASSUME_YES` | C | `1`: the same as `-y` | you're asked to type `yes` |
 | `MDMESH_BASE_URL` | C | the public base URL, `https://…` (`http://` works too) | asked; a re-run keeps the current one |
 | `MDMESH_HTTP_PORT` | C | the HTTP port, 1-65535 | asked, default 8080 or the current port |
