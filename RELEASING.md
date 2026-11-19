@@ -35,7 +35,7 @@
    ```bash
    release/check-advisories.sh X.Y.Z     # fails on a patched version with no Security section; flags drafts with none set
    # the same list by hand:
-   gh api --paginate 'repos/MDMesh-app/MDMesh/security-advisories?per_page=100' \
+   gh api --paginate 'repos/01karev/MDMesh/security-advisories?per_page=100' \
      --jq '.[] | [.ghsa_id, .state, ([.vulnerabilities[]?.patched_versions // empty] | join(","))] | @tsv'
    ```
 
@@ -58,7 +58,7 @@
 
    ```bash
    git fetch origin
-   sha=$(gh pr view N -R MDMesh-app/MDMesh --json mergeCommit -q .mergeCommit.oid)
+   sha=$(gh pr view N -R 01karev/MDMesh --json mergeCommit -q .mergeCommit.oid)
    git switch --detach "$sha" && git log -1 --format=%s     # must print: vX.Y.Z (#N)
    n=$(release/changelog-section.sh X.Y.Z) && git tag -a vX.Y.Z --cleanup=whitespace -m "$n" "$sha"
    release/changelog-section.sh --check vX.Y.Z "$sha" && git push origin vX.Y.Z
@@ -84,7 +84,7 @@ The notes are for the person running MDMesh. They read them to decide when to up
 - **Reference detail goes in the docs, with one line that links to it.** Database columns and indexes go in
   [UPGRADING](docs/UPGRADING.md); agent protocol changes in [proto/VERSIONING.md](proto/VERSIONING.md); console
   extension props, tokens and deprecations in [web/EXTENDING.md](web/EXTENDING.md); new API endpoints in the
-  docs for that feature. Write links as full `https://github.com/MDMesh-app/MDMesh/blob/main/…` URLs: the GitHub
+  docs for that feature. Write links as full `https://github.com/01karev/MDMesh/blob/main/…` URLs: the GitHub
   release page doesn't resolve relative ones.
 - **Under the hood is a few lines of links**, for example "Agent protocol 1.11 ([VERSIONING](…))" and one
   Dependencies line naming the notable bumps.
@@ -192,7 +192,7 @@ commit instead.
 
 ```bash
 git fetch origin
-sha=$(gh pr view N -R MDMesh-app/MDMesh --json mergeCommit -q .mergeCommit.oid)   # the release PR, as in step 6
+sha=$(gh pr view N -R 01karev/MDMesh --json mergeCommit -q .mergeCommit.oid)   # the release PR, as in step 6
 git switch --detach "$sha" && git log -1 --format=%s     # must print: vX.Y.Z (#N)
 n=$(release/changelog-section.sh X.Y.Z) && git tag -f -a vX.Y.Z --cleanup=whitespace -m "$n" "$sha"
 release/changelog-section.sh --check vX.Y.Z "$sha" && git push origin :refs/tags/vX.Y.Z && git push origin vX.Y.Z
@@ -201,7 +201,7 @@ release/changelog-section.sh --check vX.Y.Z "$sha" && git push origin :refs/tags
 **If "Published quickstart.sh matches the signed manifest" fails**, the published `quickstart.sh` asset was changed
 during the run: the checked install refuses it (the shortcut runs the tag's copy, not the asset). Upload the tag's
 own copy over it
-(`gh release upload vX.Y.Z quickstart.sh --clobber -R MDMesh-app/MDMesh` from the tagged commit, then check its
+(`gh release upload vX.Y.Z quickstart.sh --clobber -R 01karev/MDMesh` from the tagged commit, then check its
 SHA-256 against the manifest) and find out who changed it; then move `:latest` by hand as below.
 
 **If the job goes red after the GitHub Release step** (the quickstart.sh readback, or "Move :latest to this release"): the
@@ -287,7 +287,7 @@ The release job runs in the `release` environment, so the repo settings decide w
   - **Target tags → Add target → Include by pattern:** `v*`.
   - **Rules:** tick **Restrict creations**, **Restrict updates**, **Restrict deletions** and **Block force pushes**;
     leave the others off.
-  - Save, then check it: `gh api repos/MDMesh-app/MDMesh/rulesets` lists it with `"enforcement": "active"` and
+  - Save, then check it: `gh api repos/01karev/MDMesh/rulesets` lists it with `"enforcement": "active"` and
     `"target": "tag"`. Re-tagging after a failed changelog check (above) needs a bypass actor.
 - **Settings → Rules → Rulesets** (or branch protection) for `main`: require pull requests and the CI checks, and
   block force pushes, so "on `main`" means reviewed.
@@ -322,7 +322,7 @@ T0 (`scripts/release-manifest-check.sh`) fails if either differs from `release/m
 Needs `gh`, `minisign`, the Android build-tools (`apksigner`, `aapt2`) and `docker buildx`:
 
 ```bash
-V=1.2.3; d=$(mktemp -d); gh release download "v$V" -R MDMesh-app/MDMesh -D "$d"
+V=1.2.3; d=$(mktemp -d); gh release download "v$V" -R 01karev/MDMesh -D "$d"
 release/verify-manifest.sh "$d/manifest.json"     # minisign: signed by the release key
 python3 -c 'import json,sys; a=json.load(open(sys.argv[1]))["components"]["apk"]; print(a["sha256"], a["versionCode"], a["signatureChecksum"])' "$d/manifest.json"
 sha256sum "$d/mdmesh-agent.apk"                   # = the manifest's sha256
@@ -330,7 +330,7 @@ release/apk-checksum.sh "$d/mdmesh-agent.apk"     # = its signatureChecksum, and
 release/version.sh "$V"                           # = its versionCode, and the APK's:
 aapt2 dump badging "$d/mdmesh-agent.apk" | grep -o "versionCode='[0-9]*'"
 for img in mdmesh-server mdmesh-web mdmesh-supervisor; do   # :V and :latest print the same digest
-  for t in "$V" latest; do docker buildx imagetools inspect --format "$img:$t {{.Manifest.Digest}}{{println}}" "ghcr.io/mdmesh-app/$img:$t"; done
+  for t in "$V" latest; do docker buildx imagetools inspect --format "$img:$t {{.Manifest.Digest}}{{println}}" "ghcr.io/01karev/$img:$t"; done
 done
 python3 -c 'import json,sys; print(*json.load(open(sys.argv[1]))["components"]["images"].values(), sep="\n")' "$d/manifest.json"   # = those digests
 python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["files"]["quickstart.sh"])' "$d/manifest.json"
