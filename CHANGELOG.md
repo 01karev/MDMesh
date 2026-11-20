@@ -9,6 +9,8 @@ Unreleased.
 
 ## Unreleased
 
+## v0.5.1 — 2026-11-20
+
 Upgrading
 - Quick start: `MDMESH_VERSION` now takes 0.5.0 or later; for 0.4.0 it stops and names that release's own
   `quickstart.sh`, as it already did for earlier releases.
